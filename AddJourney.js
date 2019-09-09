@@ -16,7 +16,7 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import DatePicker from 'react-native-date-picker';
-
+import {Navigation} from 'react-native-navigation';
 class ViewTitleHeader extends Component {
   render() {
     return (
@@ -53,6 +53,7 @@ class ViewTextInput extends Component {
           style={{minHeight: 20, maxHeight: this.props.maxHeight, flex: 1}}
           multiline={false}
           placeholder={this.props.placeholder}
+          keyboardType={this.props.keyboardType}
         />
       </View>
     );
@@ -86,7 +87,7 @@ export default class AddJourney extends Component {
   }
   render() {
     return (
-      <KeyboardAvoidingView  behavior="padding" style={{flex: 1}}>
+      <KeyboardAvoidingView behavior="padding" style={{flex: 1}}>
         <SafeAreaView style={{flex: 1}}>
           <View
             style={{
@@ -168,6 +169,7 @@ export default class AddJourney extends Component {
             <ViewTextInput
               placeholder="Enter Starting Mileage"
               maxHeight={20}
+              keyboardType="numeric"
             />
             <ViewTitleHeader title="Finishing Mileage"></ViewTitleHeader>
             <ViewTextInput
@@ -198,7 +200,13 @@ export default class AddJourney extends Component {
               flexDirection: 'row',
               justifyContent: 'space-between',
             }}>
-            <Button onPress={() => {}} title="Back" color="#ffffff" />
+            <Button
+              onPress={() => {
+                Navigation.dismissModal(this.props.componentId);
+              }}
+              title="Back"
+              color="#ffffff"
+            />
             <Button
               onPress={() => {
                 alert('You tapped the button!');
@@ -206,7 +214,13 @@ export default class AddJourney extends Component {
               title="Add Another Journey"
               color="#ffffff"
             />
-            <Button onPress={() => {}} title="Done" color="#ffffff" />
+            <Button
+              onPress={() => {
+                Navigation.dismissModal(this.props.componentId);
+              }}
+              title="Done"
+              color="#ffffff"
+            />
           </View>
         </SafeAreaView>
       </KeyboardAvoidingView>
