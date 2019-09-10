@@ -11,20 +11,41 @@ import {
   SectionList,
   Text,
   AsyncStorage,
+  Dimensions,
+  Platform,
+  TouchableOpacity,
 } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 import {USER_KEY} from './config';
 import {addRound} from './image';
 import {Navigation} from 'react-native-navigation';
+import Swipeable from 'react-native-swipeable';
+
+    const rightButtons = [
+      <TouchableHighlight
+      onPress={() => {
+        this.swipe.reset();
+      }}
+      >
+        <Text>Button 1</Text>
+      </TouchableHighlight>,
+      <TouchableHighlight>
+        <Text>Button 2</Text>
+      </TouchableHighlight>,
+    ];
+
 
 export default class Home extends Component {
   constructor(props) {
     super(props);
+    this.swipeRef = null; 
     this.state = {
-      isJourneyListSelected: true,
+      isJourneyListSelected: false,
       fileURL: '',
     };
+    
   }
+
   async componentWillMount() {
     try {
       const user = await AsyncStorage.getItem(USER_KEY);
@@ -147,11 +168,7 @@ export default class Home extends Component {
       return [
         {
           title: '',
-          data: [
-            '1',
-            '2',
-            '3',
-          ],
+          data: ['1', '2', '3'],
         },
       ];
     }
@@ -177,10 +194,64 @@ export default class Home extends Component {
           'item4',
           'item5',
           'item6',
+          'item1',
+          'item2',
+          'item3',
+          'item4',
+          'item5',
+          'item6',
+          'item1',
+          'item2',
+          'item3',
+          'item4',
+          'item5',
+          'item6',
+          'item1',
+          'item2',
+          'item3',
+          'item4',
+          'item5',
+          'item6',
         ],
       },
     ];
   };
+  _renderSectionListItem(item, index, section) {
+    return (
+      <Swipeable
+      key={10}
+      onRef={(ref) => {
+        this.swipeRef = ref;
+      }} rightButtons={
+        [
+        <TouchableOpacity
+        onPress={() => {
+          this.swipeRef.recenter();
+          this.forceUpdate();
+        }}
+        >
+          <Text>Button 1</Text>
+        </TouchableOpacity>,
+        <TouchableHighlight>
+          <Text>Button 2</Text>
+        </TouchableHighlight>]}>
+        <View
+          style={{
+            height: 35,
+            backgroundColor: 'green',
+            justifyContent: 'center',
+            flex: 1,
+            flexDirection: 'column',
+          }}>
+          <Text key={index} style={{paddingHorizontal: 10}}>
+            {item}
+          </Text>
+          <View
+            style={{height: 0.4, backgroundColor: 'white', bottom: -9}}></View>
+        </View>
+      </Swipeable>
+    );
+  }
   render() {
     return (
       <SafeAreaView style={{flex: 1}}>
@@ -223,11 +294,15 @@ export default class Home extends Component {
         </View>
         <View style={{height: 2, backgroundColor: '#0d2734'}}></View>
         <SectionList
+        scrollEnabled={!this.state.isSwiping}
           stickySectionHeadersEnabled={false}
-          renderItem={({item, index, section}) => (
-            <View style={{height:35, backgroundColor:"green", justifyContent: 'center',
-                flex: 1, flexDirection:"column"}}><Text key={index} style={{ paddingHorizontal:10}}>{item}</Text><View style={{height:0.4, backgroundColor:"white", bottom:-9}}></View></View>
-          )}
+          renderItem={({item, index, section}) =>
+            this._renderSectionListItem(item, index, section)
+          }
+          // renderItem={({item, index, section}) => (
+          //   <View style={{height:35, backgroundColor:"green", justifyContent: 'center',
+          //       flex: 1, flexDirection:"column"}}><Text key={index} style={{ paddingHorizontal:10}}>{item}</Text><View style={{height:0.4, backgroundColor:"white", bottom:-9}}></View></View>
+          // )}
           renderSectionHeader={({section}) => (
             <View
               style={{
@@ -249,20 +324,6 @@ export default class Home extends Component {
           keyExtractor={(item, index) => item + index}
           extraData={this.state.isJourneyListSelected}
         />
-        <TouchableHighlight
-          onPress={this._btnAddRoundClicked.bind(this)}
-          style={{
-            height: 44,
-            width: 44,
-            borderRadius: 22,
-            alignSelf: 'center',
-            zIndex: 1,
-            marginBottom: -22,
-            position: "absolute",
-            bottom:100
-          }}>
-          <Image style={{height: 44, width: 44}} source={addRound} />
-        </TouchableHighlight>
         <View style={{height: 2, backgroundColor: '#0d2734'}}></View>
         <View
           style={{
@@ -309,6 +370,24 @@ export default class Home extends Component {
             />
           </View>
         </View>
+        <TouchableHighlight
+          onPress={this._btnAddRoundClicked.bind(this)}
+          style={{
+            justifyContent: 'center',
+            zIndex: 5,
+            position: 'absolute',
+            alignSelf: 'center',
+            bottom: isIphoneXorAbove() ? 56 : 24,
+          }}>
+          <Image
+            style={{
+              alignSelf: 'center',
+              height: 44,
+              width: 44,
+            }}
+            source={addRound}
+          />
+        </TouchableHighlight>
       </SafeAreaView>
     );
   }
@@ -320,3 +399,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
 });
+export function isIphoneXorAbove() {
+  const dimen = Dimensions.get('window');
+  return (
+    Platform.OS === 'ios' &&
+    !Platform.isPad &&
+    !Platform.isTVOS &&
+    (dimen.height === 812 ||
+      dimen.width === 812 ||
+      (dimen.height === 896 || dimen.width === 896))
+  );
+}
